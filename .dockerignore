@@ -1,0 +1,11 @@
+.venv
+.git
+.gitignore
+.ipynb_checkpoints
+__pycache__/
+data/
+logs/
+*.sqlite
+*.db
+.env
+src/config/settings.yml
