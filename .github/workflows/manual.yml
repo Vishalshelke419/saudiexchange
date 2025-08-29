@@ -1,0 +1,10 @@
+name: manual-run
+on:
+  workflow_dispatch: {}   # adds the "Run workflow" button
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t saudiexchange:ci .
+      - run: docker run --rm -e TZ=Australia/Sydney saudiexchange:ci python -m src.pipelines.daily
