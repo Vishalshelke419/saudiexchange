@@ -1,11 +1,12 @@
 services:
   daily:
-    build: .
+    build:
+      context: .                 # repo root (so .dockerignore applies)
+      dockerfile: docker/Dockerfile
     command: python -m src.pipelines.daily
     environment:
       - TZ=Australia/Sydney
-      # - MY_API_KEY=${MY_API_KEY}   # put in .env (not committed) if needed
     volumes:
-      - ./:/app           # live code while developing
-      - ./data:/app/data  # keep outputs on host
+      - ./:/app
+      - ./data:/app/data
       - ./logs:/app/logs
