@@ -1,0 +1,10 @@
+﻿__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+data/
+logs/
+*.db
+*.sqlite
+.env
+src/config/settings.yml
