@@ -8,3 +8,5 @@ logs/
 *.sqlite
 .env
 src/config/settings.yml
+financials_json/netdump/
+
