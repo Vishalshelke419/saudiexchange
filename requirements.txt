@@ -5,3 +5,6 @@ lxml
 beautifulsoup4
 python-dateutil
 pyyaml
+selenium
+webdriver-manager
+

@@ -50,15 +50,40 @@ NOISY_URL_BITS = [
     "Theme", "dojo", "font", ".js?", "icon", "manifest", "bootstrap"
 ]
 
+
 def start_driver():
     opts = webdriver.ChromeOptions()
-    if HEADLESS: opts.add_argument("--headless=new")
-    opts.add_argument("--start-maximized")
-    opts.set_capability("goog:loggingPrefs", {"performance":"ALL"})
-    drv = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
-    # enable CDP Network
-    drv.execute_cdp_cmd("Network.enable", {"maxResourceBufferSize": 50_000_000, "maxTotalBufferSize": 100_000_000})
-    drv.execute_cdp_cmd("Network.setCacheDisabled", {"cacheDisabled": True})
+
+    # --- required for Docker ---
+    opts.add_argument("--headless=new")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--disable-gpu")
+    opts.add_argument("--window-size=1920,1080")
+    opts.add_argument("--remote-debugging-port=9222")
+
+    # --- POINT TO system chromium & chromedriver in the image ---
+    opts.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+    chromedriver_path = os.getenv("CHROMEDRIVER_BIN", "/usr/bin/chromedriver")
+    service = Service(chromedriver_path)
+
+    # --- THIS LINE ENABLES performance logs (fixes your error) ---
+    opts.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+    # (optional) tighten perf logging: network only
+    opts.set_capability("goog:chromeOptions", {"perfLoggingPrefs": {"enableNetwork": True}})
+
+    drv = webdriver.Chrome(service=service, options=opts)
+
+    # Optional CDP tuning (you already use this)
+    try:
+        drv.execute_cdp_cmd("Network.enable", {
+            "maxResourceBufferSize": 50_000_000,
+            "maxTotalBufferSize": 100_000_000
+        })
+        drv.execute_cdp_cmd("Network.setCacheDisabled", {"cacheDisabled": True})
+    except Exception:
+        pass
+
     return drv
 
 def click_tab(driver, label):
